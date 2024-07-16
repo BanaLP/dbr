@@ -3,6 +3,7 @@ package dbr
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strconv"
 
 	"github.com/gocraft/dbr/v2/dialect"
@@ -473,4 +474,17 @@ func (b *SelectStmt) IndexHint(hints ...interface{}) *SelectStmt {
 		}
 	}
 	return b
+}
+
+func (b *SelectStmt) PrintSql() {
+	i := interpolator{
+		Buffer:       NewBuffer(),
+		Dialect:      b.Dialect,
+		IgnoreBinary: true,
+	}
+	err := i.encodePlaceholder(b, true)
+	query, value := i.String(), i.Value()
+	if err == nil {
+		fmt.Println(query, value)
+	}
 }
